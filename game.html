@@ -219,7 +219,7 @@
       document.getElementById("nextBtn").classList.remove("hidden");
     }
     function backpase() {
-      window.location.href="index.html"
+      window.location.href="./index.html"
     }
     function nextQuestion() {
       currentQuestionIndex++;
@@ -231,7 +231,7 @@
         document.getElementById("optionsContainer").innerHTML = `
           <p>お疲れ様でした！あなたの結果は…</p>
           <p class="score-text">${quizData.length}問中 ${score}問 正解でした！</p>
-          <button type="button" id="nextBtn" onclick="backpase()">ホームへ戻る</button>
+          <button type="button" onclick="backpase()">ホームへ戻る</button>
         `;
         document.getElementById("submitBtn").classList.add("hidden");
         document.getElementById("nextBtn").classList.add("hidden");
