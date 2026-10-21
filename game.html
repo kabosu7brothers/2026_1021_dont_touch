@@ -80,7 +80,7 @@
       <div class="btn-container">
         <button type="button" id="submitBtn" onclick="checkAnswer()">回答する</button>
         <button type="button" id="nextBtn" class="hidden" onclick="nextQuestion()">次の問題に進む</button>
-        <button type="button" id="backBtn" class="hidden" onclick="backpase()">ホームへ戻る</button>
+        <button type="button" id="backBtn" class="hidden" onclick="backpase(event)">ホームへ戻る</button>
       </div>
     </form>
 
@@ -219,9 +219,11 @@
       document.getElementById("submitBtn").classList.add("hidden");
       document.getElementById("nextBtn").classList.remove("hidden");
     }
-    function backpase() {
+    function backpase(event) {
+      if(event){
+        event.preventdefault();
+      }
       window.location.href='index.html'
-      document.getElementById("backBtn").classList.add("hidden");
     }
     function nextQuestion() {
       currentQuestionIndex++;
