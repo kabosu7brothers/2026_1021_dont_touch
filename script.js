@@ -35,7 +35,7 @@ async function loadAnimals() {
     }
 
     data.forEach(animal => {//animal要素にそれぞれ処理を行う
-        const div = document.createElement("div");//タグ生成
+        const div = document.createElement("div");//タグ生成a
         div.className = "animal";
 
         // textContentを使い、入力された文字がHTMLとして実行されないようにする
