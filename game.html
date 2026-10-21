@@ -80,6 +80,7 @@
       <div class="btn-container">
         <button type="button" id="submitBtn" onclick="checkAnswer()">回答する</button>
         <button type="button" id="nextBtn" class="hidden" onclick="nextQuestion()">次の問題に進む</button>
+        <button type="button" id="backBtn" class="hidden" onclick="backpase()">ホームへ戻る</button>
       </div>
     </form>
 
@@ -231,8 +232,8 @@
         document.getElementById("optionsContainer").innerHTML = `
           <p>お疲れ様でした！あなたの結果は…</p>
           <p class="score-text">${quizData.length}問中 ${score}問 正解でした！</p>
-          <button type="submit" onclick="backpase()">ホームへ戻る</button>
         `;
+        document.getElementById("backBtn").classList.remove("hidden");
         document.getElementById("submitBtn").classList.add("hidden");
         document.getElementById("nextBtn").classList.add("hidden");
         document.getElementById("result").textContent = "";
