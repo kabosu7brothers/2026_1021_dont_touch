@@ -229,6 +229,7 @@
         document.getElementById("optionsContainer").innerHTML = `
           <p>お疲れ様でした！あなたの結果は…</p>
           <p class="score-text">${quizData.length}問中 ${score}問 正解でした！</p>
+          <button type="button" id="nextBtn" onclick="backpase()">ホームへ戻る</button>
         `;
         document.getElementById("submitBtn").classList.add("hidden");
         document.getElementById("nextBtn").classList.add("hidden");
