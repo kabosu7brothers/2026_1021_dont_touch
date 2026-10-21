@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>BIO watchGAME mode</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+    h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+    #quizForm { margin-bottom: 15px; }
+    .option-label { display: block; margin: 10px 0; padding: 10px; background: #f4f4f4; border-radius: 4px; cursor: pointer; }
+    .option-label:hover { background: #e9e9e9; }
+    #result { margin-top: 20px; font-size: 1.3em; font-weight: bold; }
+    #explain { margin-top: 10px; padding: 12px; background: #eef7ff; border-left: 4px solid #007bff; font-size: 0.95em; line-height: 1.5; }
+    .btn-container { margin-top: 20px; }
+    
+    /* ボタンのデザイン：黒枠・中は白 */
+    button { 
+      padding: 10px 20px; 
+      font-size: 1em; 
+      cursor: pointer; 
+      border: 2px solid #000000; /* 黒色の枠線 */
+      border-radius: 4px; 
+      background-color: #ffffff; /* 中は白色 */
+      color: #000000; /* 文字は黒色 */
+      font-weight: bold; 
+      transition: background-color 0.2s; 
+    }
+    button:hover { 
+      background-color: #f0f0f0; /* 薄い灰色 */
+    }
+    
+    .hidden { display: none; }
+    .score-text { font-size: 1.5em; color: #e44d26; font-weight: bold; margin-top: 10px; }
+    .correct { color: #28a745; }
+    .incorrect { color: #dc3545; }
+    
+    /* 🛠️ スタート画面：ご指定の背景画像を設定 */
+    #startScreen { 
+      text-align: center; 
+      padding: 60px 20px; 
+      background-image: url('https://www.asahi.com/eco/news/images/SEB201212130005.jpg');
+      background-size: cover;
+      background-position: center;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 2000px rgba(255, 255, 255, 0.4); /* 画像を少し明るくして文字を見やすくするフィルター */
+    }
+    /* 🛠️ スタート画面内の文字コンテナ（読みやすさ向上用） */
+    .start-content {
+      background-color: rgba(255, 255, 255, 0.85); /* 文字の後ろを半透明の白にする */
+      padding: 30px 20px;
+      border-radius: 6px;
+      display: inline-block;
+      max-width: 90%;
+    }
+    #startScreen h1 {
+      margin-top: 0;
+    }
+    #startScreen p { font-size: 1.1em; color: #333; margin-bottom: 30px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <!-- スタート画面（最初だけ表示されます） -->
+  <div id="startScreen">
+    <!-- 🛠️ 背景画像の上でも文字を読みやすくするためのボックス構造にしました -->
+    <div class="start-content">
+      <h1>BIO watchGAME mode</h1>
+      <p>高崎山に関するクイズ（全10問）に挑戦しよう！</p>
+      <button type="button" onclick="startQuiz()">クイズをスタートする</button>
+    </div>
+  </div>
+
+  <!-- クイズ画面（最初は隠しておきます） -->
+  <div id="quizScreen" class="hidden">
+    <h1 id="questionTitle">クイズを読み込み中...</h1>
+
+    <form id="quizForm">
+      <div id="optionsContainer"></div>
+      
+      <div class="btn-container">
+        <button type="button" id="submitBtn" onclick="checkAnswer()">回答する</button>
+        <button type="button" id="nextBtn" class="hidden" onclick="nextQuestion()">次の問題に進む</button>
+      </div>
+    </form>
+
+    <p id="result"></p>
+    <div id="explain" class="hidden"></div>
+  </div>
+
+  <script>
+    // クイズのデータ（計10問）
+    const quizData = [
+      {
+        question: "第1問：現在高崎山には”群”があるが、今いないのは何群か？",
+        choices: ["A群", "B群", "C群"],
+        answer: ["A群"],
+        explain: "C群との喧嘩によって２００２年頃にいなくなってしまいました。B群、C群だけなのはそのせいです。"
+      },
+      { 
+        question: "第2問：大分県の高﨑山に2002年までいたサルの頭数は何頭か？", 
+        choices: ["１万頭", "二千頭", "二百頭"], 
+        answer: ["二千頭"], 
+        explain: "解説：２００２年まではサルが二千頭いましたが、A群がいなくなったことにより現在は７６０頭になってます。" 
+      },
+      { 
+        question: "第3問：高崎山の問題視されている点はおもにいくつあるか？", 
+        choices: ["10個ぐらい：なんとか解決できそう", "100個ぐらい：ありすぎて大変", "0個：あんまり問題視することはない"], 
+        answer: ["0個：あんまり問題視することはない"], 
+        explain: "KABOSU BROTHERS調べでは今のところ高崎山の問題視しているところはないそう。" 
+      },
+      { 
+        question: "第4問：高崎山の標高は何mか？", 
+        choices: ["444m", "628.4m", "1000m"], 
+        answer: ["628.4m"], 
+        explain: "高崎山の標高は628.4mで東京スカイツリーぐらいの高さです。" 
+      },
+      { 
+        question: "第5問：高崎山の頂上には何があるか？", 
+        choices: ["城", "コンビニ", "ポスト"], 
+        answer: ["城"], 
+        explain: "高崎山の頂上には大友宗麟の拠点であった高崎山城があります。" 
+      },
+      { 
+        question: "第6問：高崎山という施設を作るにあたって、管理会社は何を思っていた？", 
+        choices: ["農作物の被害防止のため", "観光資源化", "大分といえば高崎山！にするため"], 
+        answer: ["農作物の被害防止のため", "観光資源化", "大分といえば高崎山！にするため"], 
+        explain: "すべて正解です。大分県のために、高崎山を開きました（KABOSU BROTHERS調べ）" 
+      },
+      {
+        question: "第7問：高崎山のサルに観光客がエサをあげてもよい？",
+        choices: ["はい", "いいえ", "山の職員がいるときだけ"],
+        answer: ["いいえ"],
+        explain: "高崎山は行う”餌付け”を行っていて、観光客がエサをあげてしまうと管理計画がくずれてしまいます。なので、絶対にやめましょう。"
+      },
+      {
+        question: "第8問：高崎山はどこの市にある？",
+        choices: ["別府市", "大分市", "由布市"],
+        answer: ["大分市"],
+        explain: "高崎山は大分市の代表的な観光地です。中学生までは無料なので足を運んでみましょう！"
+      },
+      {
+        question: "第9問：高崎山のサルの種類は？",
+        choices: ["ヤクシカ", "テナガザル", "ニホンザル"],
+        answer: ["ニホンザル"],
+        explain: "高崎山に生息するのはニホンザルです。ニホンザルに限らずエサをあげたり、むやみに暴力を振るったりしないようにしましょう。"
+      },
+      {
+        question: "第10問：高崎山でしてはいけないことは？",
+        choices: ["サルにエサを与えること", "サルと目を合わせること", "サルの前で大声を出すこと"],
+        answer: ["サルにエサを与えること", "サルと目を合わせること", "サルの前で大声を出すこと"], 
+        explain: "すべてしてはいけません。ルールを守って楽しく観光をしましょう。"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    // クイズを開始する関数
+    function startQuiz() {
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("quizScreen").classList.remove("hidden");
+      loadQuiz();
+    }
+
+    function loadQuiz() {
+      const currentQuiz = quizData[currentQuestionIndex];
+      document.getElementById("questionTitle").textContent = currentQuiz.question;
+      const optionsContainer = document.getElementById("optionsContainer");
+      optionsContainer.innerHTML = "";
+      
+      currentQuiz.choices.forEach(choice => {
+        const label = document.createElement("label");
+        label.className = "option-label";
+        label.innerHTML = `<input type="radio" name="quizOption" value="${choice}"> ${choice}`;
+        optionsContainer.appendChild(label);
+      });
+
+      document.getElementById("result").textContent = "";
+      document.getElementById("explain").classList.add("hidden");
+      document.getElementById("submitBtn").classList.remove("hidden");
+      document.getElementById("nextBtn").classList.add("hidden");
+    }
+
+    function checkAnswer() {
+      const checkedOption = document.querySelector('input[name="quizOption"]:checked');
+      const result = document.getElementById("result");
+      const explainBox = document.getElementById("explain");
+
+      if (!checkedOption) {
+        result.textContent = "選択肢を選んでください。";
+        result.className = "incorrect";
+        return;
+      }
+
+      const currentQuiz = quizData[currentQuestionIndex];
+      const userAnswer = checkedOption.value;
+
+      const isCorrect = currentQuiz.answer.includes(userAnswer);
+
+      if (isCorrect) {
+        result.textContent = "正解！";
+        result.className = "correct";
+        score++;
+      } else {
+        if (currentQuiz.answer.length === 1) {
+          result.textContent = `不正解… （正解は: ${currentQuiz.answer}）`;
+        } else {
+          result.textContent = "不正解…";
+        }
+        result.className = "incorrect";
+      }
+
+      if (currentQuiz.explain) {
+        explainBox.textContent = currentQuiz.explain;
+        explainBox.classList.remove("hidden");
+      }
+
+      document.getElementById("submitBtn").classList.add("hidden");
+      document.getElementById("nextBtn").classList.remove("hidden");
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < quizData.length) {
+        loadQuiz();
+      } else {
+        document.getElementById("questionTitle").textContent = "クイズ終了！";
+        document.getElementById("optionsContainer").innerHTML = `
+          <p>お疲れ様でした！あなたの結果は…</p>
+          <p class="score-text">${quizData.length}問中 ${score}問 正解でした！</p>
+        `;
+        document.getElementById("submitBtn").classList.add("hidden");
+        document.getElementById("nextBtn").classList.add("hidden");
+        document.getElementById("result").textContent = "";
+        document.getElementById("explain").classList.add("hidden");
+      }
+    }
+  </script>
+</body>
+</html>
