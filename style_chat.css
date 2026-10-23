@@ -9,9 +9,9 @@ body {
 /* 質問カード */
 .question-card {
   background-color: #ffffff;
-  border: 1px solid #ddd;
+  border: 1.5px solid #ddd;
   border-radius: 8px;
-  padding: 12px;
+  padding: 20px;
   margin-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   transition: transform 0.1s ease;
@@ -42,7 +42,7 @@ body {
   background-color: #fafafa;
   border: 1px solid #ddd;
   border-radius: 6px;
-  padding: 10px;
+  padding: 20px;
   margin-top: 8px;
 }
 .answer-card p {
@@ -64,6 +64,7 @@ input, textarea, button {
 }
 button {
   background-color: #0077cc;
+  font-size:36px;
   color: white;
   border: none;
   cursor: pointer;
