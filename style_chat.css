@@ -69,7 +69,6 @@ input, textarea, button {
 }
 textarea {
   min-height: 150px;
-  resize: vertical;
 }
 button {
   background-color: #0077cc;
