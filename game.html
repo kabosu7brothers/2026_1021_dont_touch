@@ -34,7 +34,7 @@
     .correct { color: #28a745; }
     .incorrect { color: #dc3545; }
     
-    /*  スタート画面：ご指定の背景画像を設定 */
+    /* 🛠️ スタート画面：ご指定の背景画像を設定 */
     #startScreen { 
       text-align: center; 
       padding: 60px 20px; 
@@ -44,7 +44,7 @@
       border-radius: 8px;
       box-shadow: inset 0 0 0 2000px rgba(255, 255, 255, 0.4); /* 画像を少し明るくして文字を見やすくするフィルター */
     }
-    /*  スタート画面内の文字コンテナ */
+    /* 🛠️ スタート画面内の文字コンテナ（読みやすさ向上用） */
     .start-content {
       background-color: rgba(255, 255, 255, 0.85); /* 文字の後ろを半透明の白にする */
       padding: 30px 20px;
@@ -60,9 +60,9 @@
 </head>
 <body>
 
-  <!-- スタート画面（最初だけ表示） -->
+  <!-- スタート画面（最初だけ表示されます） -->
   <div id="startScreen">
-    <!--  背景画像の上でも文字を読みやすく -->
+    <!-- 🛠️ 背景画像の上でも文字を読みやすくするためのボックス構造にしました -->
     <div class="start-content">
       <h1>BIO watchGAME mode</h1>
       <p>高崎山に関するクイズ（全10問）に挑戦しよう！</p>
@@ -70,9 +70,8 @@
     </div>
   </div>
 
-  <!-- クイズ画面 -->
+  <!-- クイズ画面（最初は隠しておきます） -->
   <div id="quizScreen" class="hidden">
-    <!--クイズのロード（ほぼ表示されない）たぶん-->
     <h1 id="questionTitle">クイズを読み込み中...</h1>
 
     <form id="quizForm">
@@ -81,7 +80,7 @@
       <div class="btn-container">
         <button type="button" id="submitBtn" onclick="checkAnswer()">回答する</button>
         <button type="button" id="nextBtn" class="hidden" onclick="nextQuestion()">次の問題に進む</button>
-        <button type="button" id="nextBtn" class="hidden" onclick="backpase()">ホームへ戻る</button>
+        <button type="button" id="backBtn" class="hidden" onclick="backpase(event)">ホームへ戻る</button>
       </div>
     </form>
 
@@ -220,7 +219,12 @@
       document.getElementById("submitBtn").classList.add("hidden");
       document.getElementById("nextBtn").classList.remove("hidden");
     }
-
+    function backpase(event) {
+      if(event){
+        event.preventdefault();
+      }
+      window.location.href='index.html'
+    }
     function nextQuestion() {
       currentQuestionIndex++;
 
@@ -229,16 +233,16 @@
       } else {
         document.getElementById("questionTitle").textContent = "クイズ終了！";
         document.getElementById("optionsContainer").innerHTML = `
-          <p>これであなたも高崎山マスターです！あなたの結果は…</p>
+          <p>お疲れ様でした！あなたの結果は…</p>
           <p class="score-text">${quizData.length}問中 ${score}問 正解でした！</p>
         `;
+        document.getElementById("backBtn").classList.remove("hidden");
         document.getElementById("submitBtn").classList.add("hidden");
         document.getElementById("nextBtn").classList.add("hidden");
         document.getElementById("result").textContent = "";
         document.getElementById("explain").classList.add("hidden");
       }
     }
-    window.location.href='index.html';
   </script>
 </body>
 </html>
